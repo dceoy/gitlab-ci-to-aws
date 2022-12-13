@@ -1,0 +1,23 @@
+---
+version: '3'
+
+services:
+  kaniko-executor:
+    container_name: kaniko-executor
+    image: gcr.io/kaniko-project/executor:debug
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID}
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
+    volumes:
+      - ../sample:/workspace:ro
+    entrypoint:
+      - /busybox/sh
+      - -c
+    command:
+      - /kaniko/executor
+        --context=/workspace
+        --dockerfile=/workspace/Dockerfile
+        --destination="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/python:latest"
+        --cleanup
